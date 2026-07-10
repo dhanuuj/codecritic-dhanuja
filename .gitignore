@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+frontend/.next/
+frontend/out/
+
+# Backend compiled output
+backend/dist/
+
+# Environment files — never commit these
+.env
+.env.local
+.env.development.local
+.env.production.local
+
+# Prisma local database
+backend/prisma/*.db
+
+# OS files
+.DS_Store
+Thumbs.db

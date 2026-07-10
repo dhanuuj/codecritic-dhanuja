@@ -1,13 +1,130 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// USER
+// One user per Clerk account.
+// clerkId links our database record to Clerk's identity.
+// ─────────────────────────────────────────────
+model User {
+  id          String   @id @default(cuid())
+  clerkId     String   @unique  // This is what Clerk sends us — we store it to identify users
+  username    String   @unique
+  email       String   @unique
+  bio         String?            // The ? means optional — user might not fill this in
+  githubUrl   String?
+  avatarUrl   String?
+  karma       Int      @default(0)  // Starts at 0, goes up by 2 for every review submitted
+  techStack   String[] @default([]) // Array of tech strings e.g. ["React", "TypeScript"]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships — one user can have many of these
+  submissions Submission[] // Review requests this user posted
+  reviews     Review[]     // Reviews this user has written for others
+}
+
+// ─────────────────────────────────────────────
+// SUBMISSION (Review Request)
+// A project posted by a user asking for peer review.
+// ─────────────────────────────────────────────
+model Submission {
+  id          String           @id @default(cuid())
+  title       String
+  description String
+  githubUrl   String
+  techTags    String[]         @default([]) // e.g. ["Next.js", "TypeScript"]
+  status      SubmissionStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  // Who posted this submission
+  authorId    String
+  author      User             @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  // A submission has 1–5 custom criteria reviewers must rate
+  criteria    ReviewCriterion[]
+
+  // Reviews that have been submitted for this submission
+  reviews     Review[]
+}
+
+// Status only has two values as per the SRS
+enum SubmissionStatus {
+  PENDING   // No reviews yet
+  REVIEWED  // Has at least one review
+}
+
+// ─────────────────────────────────────────────
+// REVIEW CRITERION
+// Each submission has 1–5 custom criteria defined
+// by the author. e.g. "Code Quality", "API Design"
+// Reviewers must rate each one out of 10.
+// ─────────────────────────────────────────────
+model ReviewCriterion {
+  id           String   @id @default(cuid())
+  label        String   // e.g. "Code Quality"
+  createdAt    DateTime @default(now())
+
+  // Which submission this criterion belongs to
+  submissionId String
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  // Ratings given for this criterion across all reviews
+  ratings      CriterionRating[]
+}
+
+// ─────────────────────────────────────────────
+// REVIEW
+// Written feedback submitted by one user
+// on another user's submission.
+// ─────────────────────────────────────────────
+model Review {
+  id           String   @id @default(cuid())
+  strengths    String   // What was done well
+  improvements String   // What needs improvement
+  resources    String?  // Optional links or references
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Which submission this review is for
+  submissionId String
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  // Who wrote this review
+  reviewerId   String
+  reviewer     User       @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  // One rating per criterion on that submission
+  criterionRatings CriterionRating[]
+
+  // Prevents the same user reviewing the same submission twice
+  @@unique([submissionId, reviewerId])
+}
+
+// ─────────────────────────────────────────────
+// CRITERION RATING
+// One row per criterion per review.
+// e.g. Review #1 rated "Code Quality" 8/10
+// ─────────────────────────────────────────────
+model CriterionRating {
+  id          String   @id @default(cuid())
+  score       Int      // 1 to 10
+
+  // Which review this rating belongs to
+  reviewId    String
+  review      Review          @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  // Which criterion is being rated
+  criterionId String
+  criterion   ReviewCriterion @relation(fields: [criterionId], references: [id], onDelete: Cascade)
+
+  // One rating per criterion per review — no duplicates
+  @@unique([reviewId, criterionId])
 }

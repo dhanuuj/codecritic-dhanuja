@@ -1,5 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import UserSync from '@/components/shared/UserSync'
 
 export default async function ProtectedLayout({
   children,
@@ -12,5 +13,11 @@ export default async function ProtectedLayout({
     redirect('/sign-in')
   }
 
-  return <>{children}</>
+  return (
+    <>
+      {/* UserSync runs on every authenticated page load */}
+      <UserSync />
+      {children}
+    </>
+  )
 }

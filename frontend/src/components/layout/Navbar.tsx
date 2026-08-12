@@ -41,6 +41,10 @@ export default function Navbar() {
                 </div>
               )}
 
+              <Link href="/profile">
+                <Button variant="ghost" size="sm">Profile</Button>
+              </Link>
+
               <Link href="/submit">
                 <Button size="sm" className="gap-1">
                   <Plus className="h-4 w-4" />

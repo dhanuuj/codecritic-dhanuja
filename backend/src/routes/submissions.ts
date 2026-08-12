@@ -86,6 +86,14 @@ router.get('/my/list', requireAuth, async (req: AuthenticatedRequest, res: Respo
     const submissions = await prisma.submission.findMany({
       where: { authorId: req.dbUserId },
       include: {
+        author: {
+          select: {
+            id: true,
+            username: true,
+            avatarUrl: true,
+            karma: true,
+          }
+        },
         criteria: true,
         _count: { select: { reviews: true } }
       },

@@ -32,28 +32,48 @@ export default function FeedPage() {
 
   // Fetch submissions whenever filters change
   useEffect(() => {
+    let cancelled = false
+
     async function fetchSubmissions() {
       setIsLoading(true)
       try {
-        const response = await submissionsApi.getAll({
-          search: searchQuery || undefined,
-          tech: selectedTech || undefined,
-          page: currentPage,
-        }) as PaginatedResponse<Submission>
+        const token = await getToken()
 
-        setSubmissions(response.data)
-        setPagination({
-          total: response.pagination.total,
-          totalPages: response.pagination.totalPages,
-        })
+        const response = await submissionsApi.getAll(
+          {
+            search: searchQuery || undefined,
+            tech: selectedTech || undefined,
+            page: currentPage,
+          },
+          token || undefined
+        ) as PaginatedResponse<Submission>
+
+        // Only update state if this effect hasn't been cancelled
+        // This prevents stale data from overwriting newer results
+        if (!cancelled) {
+          setSubmissions(response.data || [])
+          if (response.pagination) {
+            setPagination({
+              total: response.pagination.total,
+              totalPages: response.pagination.totalPages,
+            })
+          }
+        }
       } catch (error) {
         console.error('Failed to fetch submissions:', error)
       } finally {
-        setIsLoading(false)
+        if (!cancelled) {
+          setIsLoading(false)
+        }
       }
     }
 
     fetchSubmissions()
+
+    // Cleanup — if the effect re-runs, cancel the previous fetch
+    return () => {
+      cancelled = true
+    }
   }, [searchQuery, selectedTech, currentPage])
 
   // Debounce the search input so we don't hit the API on every keystroke
@@ -78,8 +98,8 @@ export default function FeedPage() {
           </h1>
           <p className="text-sm text-muted-foreground">
             {user?.techStack?.length
-              ? `Showing submissions relevant to your stack`
-              : 'Browse all review requests'}
+              ? `Feed personalised for your stack — ${user.techStack.slice(0, 3).join(', ')}${user.techStack.length > 3 ? '...' : ''}`
+              : 'Set your tech stack in settings to get a personalised feed'}
           </p>
         </div>
 

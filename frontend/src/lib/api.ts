@@ -44,13 +44,16 @@ export async function apiCall<T>(
 
 export const submissionsApi = {
   // Get public feed — no token needed
-  getAll: (params?: { search?: string; tech?: string; page?: number }) => {
+  getAll: (params?: { search?: string; tech?: string; page?: number }, token?: string) => {
     const query = new URLSearchParams()
     if (params?.search) query.set('search', params.search)
     if (params?.tech) query.set('tech', params.tech)
     if (params?.page) query.set('page', String(params.page))
     const queryStr = query.toString()
-    return apiCall(`/api/submissions${queryStr ? `?${queryStr}` : ''}`)
+    return apiCall(
+      `/api/submissions${queryStr ? `?${queryStr}` : ''}`,
+      { token }
+    )
   },
 
   // Get one submission by ID — no token needed

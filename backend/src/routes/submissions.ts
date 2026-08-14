@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express'
 import { AuthenticatedRequest } from '../types'
-import { requireAuth } from '../middleware/auth'
+import { requireAuth, optionalAuth } from '../middleware/auth'
 import { prisma } from '../lib/prisma'
 import { z } from 'zod'
 
@@ -14,68 +14,8 @@ const createSubmissionSchema = z.object({
   criteria: z.array(z.string().min(1)).min(1).max(5),
 })
 
-// GET /api/submissions — public feed
-router.get('/', async (req: Request, res: Response) => {
-  try {
-    // Cast query params explicitly — Express types them as string | string[] | ParsedQs
-    const search = req.query.search as string | undefined
-    const tech = req.query.tech as string | undefined
-    const page = parseInt(req.query.page as string) || 1
-    const pageSize = 10
-    const skip = (page - 1) * pageSize
-
-    const where: any = {}
-
-    if (search) {
-      where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
-      ]
-    }
-
-    if (tech) {
-      where.techTags = { has: tech }
-    }
-
-    const submissions = await prisma.submission.findMany({
-      where,
-      include: {
-        author: {
-          select: {
-            id: true,
-            username: true,
-            avatarUrl: true,
-            karma: true,
-          }
-        },
-        criteria: true,
-        _count: {
-          select: { reviews: true }
-        }
-      },
-      orderBy: { createdAt: 'desc' },
-      skip,
-      take: pageSize,
-    })
-
-    const total = await prisma.submission.count({ where })
-
-    res.json({
-      data: submissions,
-      pagination: {
-        page,
-        pageSize,
-        total,
-        totalPages: Math.ceil(total / pageSize),
-      }
-    })
-  } catch (error) {
-    console.error('Get submissions error:', error)
-    res.status(500).json({ message: 'Failed to get submissions' })
-  }
-})
-
-// GET /api/submissions/my/list — must be BEFORE /:id or Express matches it as an id
+// GET /api/submissions/my/list — current user's own submissions
+// MUST be before /:id otherwise Express treats "my" as an id
 router.get('/my/list', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
   try {
     if (!req.dbUserId) {
@@ -104,6 +44,129 @@ router.get('/my/list', requireAuth, async (req: AuthenticatedRequest, res: Respo
   } catch (error) {
     console.error('Get my submissions error:', error)
     res.status(500).json({ message: 'Failed to get your submissions' })
+  }
+})
+
+// GET /api/submissions — public feed with optional recommendation scoring
+router.get('/', optionalAuth, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const search = req.query.search as string | undefined
+    const tech = req.query.tech as string | undefined
+    const page = parseInt(req.query.page as string) || 1
+    const pageSize = 10
+    const skip = (page - 1) * pageSize
+
+    const where: any = {}
+
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+      ]
+    }
+
+    if (tech) {
+      where.techTags = { has: tech }
+    }
+
+    // Fetch ALL matching submissions before scoring
+    const allSubmissions = await prisma.submission.findMany({
+      where,
+      include: {
+        author: {
+          select: {
+            id: true,
+            username: true,
+            avatarUrl: true,
+            karma: true,
+          }
+        },
+        criteria: true,
+        _count: {
+          select: { reviews: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    const total = allSubmissions.length
+    let orderedSubmissions = allSubmissions
+
+    // If logged in, score and reorder the feed
+    if (req.userId) {
+      const dbUser = await prisma.user.findUnique({
+        where: { clerkId: req.userId },
+        select: {
+          techStack: true,
+          reviews: {
+            include: {
+              submission: {
+                select: { techTags: true }
+              }
+            }
+          }
+        }
+      })
+
+      if (dbUser) {
+        const userTechStack = dbUser.techStack || []
+
+        // Build set of tags user has reviewed before
+        const reviewedTags = new Set<string>()
+        dbUser.reviews.forEach((review) => {
+          review.submission.techTags.forEach((tag) => reviewedTags.add(tag))
+        })
+
+        // Score every submission
+        const scored = allSubmissions.map((submission) => {
+          let score = 0
+
+          // 1. Tech stack match — +10 per matching tag
+          const matchingTags = submission.techTags.filter((tag) =>
+            userTechStack.includes(tag)
+          )
+          score += matchingTags.length * 10
+
+          // 2. Recency bonus
+          const ageInDays =
+            (Date.now() - new Date(submission.createdAt).getTime()) /
+            (1000 * 60 * 60 * 24)
+
+          if (ageInDays <= 7) {
+            score += 5
+          } else if (ageInDays <= 30) {
+            score += 2
+          }
+
+          // 3. Review history bonus — +3 per tag user has reviewed before
+          const reviewHistoryMatches = submission.techTags.filter((tag) =>
+            reviewedTags.has(tag)
+          )
+          score += reviewHistoryMatches.length * 3
+
+          return { submission, score }
+        })
+
+        scored.sort((a, b) => b.score - a.score)
+        orderedSubmissions = scored.map((s) => s.submission)
+      }
+    }
+
+    // Paginate AFTER scoring
+    const paginatedSubmissions = orderedSubmissions.slice(skip, skip + pageSize)
+
+    res.json({
+      data: paginatedSubmissions,
+      pagination: {
+        page,
+        pageSize,
+        total,
+        totalPages: Math.ceil(total / pageSize),
+      }
+    })
+  } catch (error) {
+    console.error('Get submissions error:', error)
+    res.status(500).json({ message: 'Failed to get submissions' })
   }
 })
 

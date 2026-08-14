@@ -43,3 +43,45 @@ export async function requireAuth(
     res.status(401).json({ message: 'Authentication failed' })
   }
 }
+
+// Optional auth — attaches user info if token is present
+// but does NOT block the request if there is no token
+export async function optionalAuth(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const authHeader = req.headers.authorization
+
+    // No token — just continue without user info
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      next()
+      return
+    }
+
+    const token = authHeader.split(' ')[1]
+
+    const payload = await verifyToken(token, {
+      secretKey: process.env.CLERK_SECRET_KEY!
+    })
+
+    if (payload && payload.sub) {
+      req.userId = payload.sub
+
+      const dbUser = await prisma.user.findUnique({
+        where: { clerkId: payload.sub }
+      })
+
+      if (dbUser) {
+        req.dbUserId = dbUser.id
+      }
+    }
+
+    next()
+  } catch (error) {
+    // Token verification failed — just continue without user info
+    // Don't block the request
+    next()
+  }
+}

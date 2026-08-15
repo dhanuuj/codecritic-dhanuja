@@ -1,0 +1,398 @@
+{
+  "info": {
+    "_postman_id": "48fa6d45-bced-43a0-85a4-1e1dc44d2271",
+    "name": "CodeCritic API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "55145100",
+    "_collection_link": "https://go.postman.co/collection/55145100-48fa6d45-bced-43a0-85a4-1e1dc44d2271?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Request 1 — Health check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Request 2 — Get public feed (no login)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/submissions",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "submissions"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Request 3 — Sync user",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/sync",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "sync"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Request 4 — Get my profile",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/users/me",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "users",
+            "me"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Request 5 — Update profile",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"bio\": \"Testing from Postman\",\r\n  \"techStack\": [\"React\", \"TypeScript\", \"Next.js\"]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/users/me",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "users",
+            "me"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Request 6 — Get my submissions",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/submissions/my/list",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "submissions",
+            "my",
+            "list"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Request 7 — Create a submission",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"Test submission created from Postman\",\r\n  \"description\": \"This submission was created directly via Postman to verify the API works independently of the frontend interface\",\r\n  \"githubUrl\": \"https://github.com/test/postman-test\",\r\n  \"techTags\": [\"React\", \"TypeScript\"],\r\n  \"criteria\": [\"Code Quality\", \"Performance\"]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/submissions",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "submissions"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Request 8 — Get one submission",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/submissions/cmsuu50ek0002lha8mft9ok0l",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "submissions",
+            "cmsuu50ek0002lha8mft9ok0l"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Request 9 — Get reviews given",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/reviews/given",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "reviews",
+            "given"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Request 10 — Get reviews received",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/reviews/received",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "reviews",
+            "received"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Request 11 — No token",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/submissions",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "submissions"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Request 12 — Self review",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"strengths\": \"Trying to review my own submission\",\r\n  \"improvements\": \"This should fail\",\r\n  \"criterionRatings\": [\r\n    { \"criterionId\": \"PASTE_CRITERION_ID\", \"score\": 5 }\r\n  ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/submissions/cmsuu50ek0002lha8mft9ok0l/reviews",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "submissions",
+            "cmsuu50ek0002lha8mft9ok0l",
+            "reviews"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Request 13 — Invalid submission data",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"Hi\",\r\n  \"description\": \"Short\",\r\n  \"githubUrl\": \"not-a-url\",\r\n  \"techTags\": [],\r\n  \"criteria\": []\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/submissions",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "submissions"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    },
+    {
+      "key": "token",
+      "secret": true
+    }
+  ]
+}

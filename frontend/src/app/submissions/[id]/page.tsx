@@ -118,7 +118,13 @@ export default function SubmissionDetailPage() {
                 {submission.author.username?.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <span>{submission.author.username}</span>
+            {/* <span>{submission.author.username}</span> */}
+            <Link
+              href={`/profile/${submission.author.username}`}
+              className="hover:underline"
+            >
+              {submission.author.username}
+            </Link>
             <div className="flex items-center gap-1 text-amber-600 dark:text-amber-400">
               <Zap className="h-3.5 w-3.5" />
               <span>{submission.author.karma} karma</span>
@@ -196,7 +202,13 @@ export default function SubmissionDetailPage() {
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="text-sm font-medium">{review.reviewer.username}</p>
+                            {/* <p className="text-sm font-medium">{review.reviewer.username}</p> */}
+                            <Link
+                              href={`/profile/${review.reviewer.username}`}
+                              className="text-sm font-medium hover:underline"
+                            >
+                              {review.reviewer.username}
+                            </Link>
                             <p className="text-xs text-muted-foreground">
                               {formatDistanceToNow(new Date(review.createdAt), { addSuffix: true })}
                             </p>

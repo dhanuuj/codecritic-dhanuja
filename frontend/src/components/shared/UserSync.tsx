@@ -32,6 +32,7 @@ export default function UserSync() {
     }
 
     syncUser()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId])
 
   // Renders nothing — purely for side effects

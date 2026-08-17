@@ -12,7 +12,6 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { usersApi } from '@/lib/api'
 import { useUserStore } from '@/store/userStore'
 import { User } from '@/types'
@@ -30,7 +29,9 @@ type SettingsFormData = z.infer<typeof settingsSchema>
 export default function SettingsPage() {
   const { getToken } = useAuth()
   const { user, setUser } = useUserStore()
-  const [selectedTech, setSelectedTech] = useState<string[]>(user?.techStack || [])
+  const [selectedTech, setSelectedTech] = useState<string[]>(
+    () => user?.techStack || []
+  )
 
   const {
     register,
@@ -46,17 +47,18 @@ export default function SettingsPage() {
     },
   })
 
-  // When user loads from store, populate the form
-  useEffect(() => {
-    if (user) {
-      reset({
-        username: user.username,
-        bio: user.bio || '',
-        githubUrl: user.githubUrl || '',
-      })
-      setSelectedTech(user.techStack || [])
-    }
-  }, [user])
+  // useEffect(() => {
+  //   if (user) {
+  //     reset({
+  //       username: user.username,
+  //       bio: user.bio || '',
+  //       githubUrl: user.githubUrl || '',
+  //     })
+  //     // eslint-disable-next-line react-hooks/exhaustive-deps
+  //     setSelectedTech(user.techStack || [])
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [user?.id])
 
   function toggleTech(tech: string) {
     setSelectedTech((prev) =>
@@ -81,9 +83,11 @@ export default function SettingsPage() {
 
       setUser(response.data)
       toast.success('Profile updated')
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to update profile')
-    }
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : 'Failed to update profile'
+        toast.error(message)
+        return
+      }
   }
 
   return (

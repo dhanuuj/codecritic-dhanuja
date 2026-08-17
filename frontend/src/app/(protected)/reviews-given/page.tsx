@@ -60,7 +60,7 @@ export default function ReviewsGivenPage() {
             <MessageSquare className="mx-auto mb-3 h-10 w-10 text-muted-foreground" />
             <p className="font-medium">No reviews given yet</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Review others' submissions to earn karma and help the community.
+              Review others&apos; submissions to earn karma and help the community.
             </p>
             <Link href="/feed">
               <Button className="mt-4" size="sm">Browse submissions</Button>
@@ -77,10 +77,10 @@ export default function ReviewsGivenPage() {
                         href={`/submissions/${review.submissionId}`}
                         className="font-medium hover:underline"
                       >
-                        {(review as any).submission?.title}
+                        {(review as unknown as { submission?: { title?: string; techTags?: string[] } }).submission?.title}
                       </Link>
                       <div className="mt-1 flex flex-wrap gap-1.5">
-                        {(review as any).submission?.techTags?.map((tag: string) => (
+                        {(review as unknown as { submission?: { title?: string; techTags?: string[] } }).submission?.techTags?.map((tag: string) => (
                           <Badge key={tag} variant="outline" className="text-xs">
                             {tag}
                           </Badge>

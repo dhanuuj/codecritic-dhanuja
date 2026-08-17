@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useAuth, UserButton, SignInButton } from '@clerk/nextjs'
-import { Code2, Plus, Zap, GitBranch } from 'lucide-react'
+import { Code2, Plus, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useUserStore } from '@/store/userStore'
 
@@ -11,7 +11,7 @@ export default function Navbar() {
   const { user } = useUserStore()
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
 
         {/* Logo */}

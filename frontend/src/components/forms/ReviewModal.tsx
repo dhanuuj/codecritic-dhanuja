@@ -9,7 +9,6 @@ import { X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { reviewsApi } from '@/lib/api'
 import { Submission } from '@/types'
@@ -77,8 +76,9 @@ export default function ReviewModal({
       )
 
       onSuccess()
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to submit review')
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to submit review'
+      toast.error(message)
     }
   }
 

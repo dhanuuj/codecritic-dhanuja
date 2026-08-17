@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { useAuth } from '@clerk/nextjs'
-import { GitBranch, Clock, User, Zap, MessageSquare, ArrowLeft } from 'lucide-react'
+import { GitBranch, Clock, Zap, MessageSquare, ArrowLeft } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import Link from 'next/link'
 import { toast } from 'sonner'
@@ -32,7 +32,7 @@ export default function SubmissionDetailPage() {
       try {
         const response = await submissionsApi.getById(id as string) as { data: Submission }
         setSubmission(response.data)
-      } catch (error) {
+      } catch {
         toast.error('Failed to load submission')
       } finally {
         setIsLoading(false)
@@ -56,7 +56,9 @@ export default function SubmissionDetailPage() {
     setShowReviewModal(false)
     // Refresh submission to show new review
     submissionsApi.getById(id as string)
-      .then((res: any) => setSubmission(res.data))
+      // .then((res: any) => setSubmission(res.data))
+      // .then((res: { data: Submission }) => setSubmission(res.data))
+      .then((res) => setSubmission((res as { data: Submission }).data))
     toast.success('Review submitted! +2 Karma earned')
   }
 
@@ -118,7 +120,6 @@ export default function SubmissionDetailPage() {
                 {submission.author.username?.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            {/* <span>{submission.author.username}</span> */}
             <Link
               href={`/profile/${submission.author.username}`}
               className="hover:underline"
@@ -202,7 +203,6 @@ export default function SubmissionDetailPage() {
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            {/* <p className="text-sm font-medium">{review.reviewer.username}</p> */}
                             <Link
                               href={`/profile/${review.reviewer.username}`}
                               className="text-sm font-medium hover:underline"

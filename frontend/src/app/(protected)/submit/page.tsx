@@ -13,8 +13,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { submissionsApi } from '@/lib/api'
 import { TECH_OPTIONS } from '@/lib/constants'
 
@@ -103,8 +101,9 @@ export default function SubmitPage() {
 
       toast.success('Review request posted!')
       router.push('/feed')
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to post review request')
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to post review request'
+      toast.error(message)
     }
   }
 
@@ -195,8 +194,8 @@ export default function SubmitPage() {
             <div>
               <Label>Review criteria</Label>
               <p className="mt-1 text-xs text-muted-foreground">
-                Define 1–5 specific areas you want reviewers to rate out of 10.
-                e.g. "Code Quality", "API Design", "Security"
+                Define 1-5 specific areas you want reviewers to rate out of 10.
+                e.g. &quot;Code Quality&quot;, &quot;API Design&quot;, &quot;Security&quot;
               </p>
             </div>
 
@@ -204,7 +203,7 @@ export default function SubmitPage() {
               {criteria.map((criterion, index) => (
                 <div key={index} className="flex gap-2">
                   <Input
-                    placeholder={`Criterion ${index + 1} — e.g. Code Quality`}
+                    placeholder={`Criterion ${index + 1} - e.g. Code Quality`}
                     value={criterion}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       updateCriterion(index, e.target.value)

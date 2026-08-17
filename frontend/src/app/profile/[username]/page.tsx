@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { Zap, GitBranch, ArrowLeft, BookOpen, Star, MessageSquare } from 'lucide-react'
+import { Zap, GitBranch, ArrowLeft, BookOpen, MessageSquare } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
@@ -27,7 +27,7 @@ export default function PublicProfilePage() {
           username as string
         ) as { data: User }
         setUser(response.data)
-      } catch (error) {
+      } catch {
         setNotFound(true)
       } finally {
         setIsLoading(false)

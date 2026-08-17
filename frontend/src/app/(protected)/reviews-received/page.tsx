@@ -8,7 +8,6 @@ import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { reviewsApi } from '@/lib/api'
 import { Review } from '@/types'
@@ -74,7 +73,7 @@ export default function ReviewsReceivedPage() {
                         href={`/submissions/${review.submissionId}`}
                         className="font-medium hover:underline"
                       >
-                        {(review as any).submission?.title}
+                        {(review as unknown as { submission?: { title?: string } }).submission?.title}
                       </Link>
                       <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
                         <Avatar className="h-5 w-5">

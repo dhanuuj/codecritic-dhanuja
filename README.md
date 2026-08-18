@@ -3,24 +3,24 @@
 A developer-focused social platform where developers submit projects for
 peer code review, receive structured feedback, and earn Karma for contributing.
 
-Built as part of the UCLan Software Engineering Professionals Programme.
+Built as part of the STEMLink Software Engineering Professionals Programme.
 
 ## Live Demo
 
-- Frontend: `[paste Vercel URL after deployment]`
-- Backend API: `[paste Railway URL after deployment]`
+- Frontend: https://codecritic-dhanuja.vercel.app
+- Backend API: https://codecritic-dhanuja.onrender.com
 
 ## Tech Stack
 
-| Layer             | Technology                                        |
-|---                |---                                                |
-| Frontend          | Next.js 16, TypeScript, Tailwind CSS, Shadcn/UI   |
-| State management  | Zustand                                           |
-| Authentication    | Clerk                                             |
-| Backend           | Node.js, Express, TypeScript                      |
-| ORM               | Prisma                                            |
-| Database          | PostgreSQL (Neon)                                 |
-| Deployment        | Vercel (frontend), Railway (backend)              |
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js 16, TypeScript, Tailwind CSS, Shadcn/UI |
+| State management | Zustand |
+| Authentication | Clerk |
+| Backend | Node.js, Express, TypeScript |
+| ORM | Prisma |
+| Database | PostgreSQL (Neon) |
+| Deployment | Vercel (frontend), Render (backend) |
 
 ## Features
 
@@ -35,14 +35,9 @@ Built as part of the UCLan Software Engineering Professionals Programme.
 - Self-review and duplicate review prevention
 - Submission status: Pending → Reviewed automatically
 
-## Team
+## Developer
 
-| Member | Contribution |
-|---|---|
-| [Your name] | Frontend, Backend, Architecture |
-| [Teammate 2] | [their area] |
-| [Teammate 3] | [their area] |
-| [Teammate 4] | [their area] |
+Built solo by Dhanuja Senarathne
 
 ## Local Setup
 
@@ -51,12 +46,14 @@ Built as part of the UCLan Software Engineering Professionals Programme.
 - npm
 
 ### 1. Clone the repo
+
 ```bash
-git clone https://github.com/dhanuuj/codecritic-g4.git
-cd codecritic-g4
+git clone https://github.com/dhanuuj/codecritic-dhanuja.git
+cd codecritic-dhanuja
 ```
 
 ### 2. Set up the backend
+
 ```bash
 cd backend
 npm install
@@ -70,17 +67,21 @@ CLERK_WEBHOOK_SECRET=your_clerk_webhook_secret
 PORT=3001
 FRONTEND_URL=http://localhost:3000
 
+
 Run database migrations:
+
 ```bash
 npx prisma migrate deploy
 ```
 
 Start the backend:
+
 ```bash
 npm run dev
 ```
 
 ### 3. Set up the frontend
+
 ```bash
 cd frontend
 npm install
@@ -96,7 +97,9 @@ NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/feed
 NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/feed
 
+
 Start the frontend:
+
 ```bash
 npm run dev
 ```

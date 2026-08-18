@@ -30,10 +30,6 @@ export default function FeedPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [inputValue, setInputValue] = useState(searchQuery)
 
-  useEffect(() => {
-    getToken().then(t => console.log('YOUR TOKEN:', t))
-  }, [])
-
   // Fetch submissions whenever filters change
   useEffect(() => {
     let cancelled = false
